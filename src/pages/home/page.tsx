@@ -1,3 +1,4 @@
+import { SearchBar } from "@/features/search/ui/SearchBar";
 import { useWeather } from "@/features/weather/model/useWeather";
 import Card from "@/features/weather/ui/Card";
 import { useGeolocation } from "@/shared/lib/useGeolocation";
@@ -14,6 +15,7 @@ const HomePage = () => {
   }
   return (
     <div className="h-full w-full bg-blue-50">
+      <SearchBar />
       <Card data={data} />
     </div>
   );
