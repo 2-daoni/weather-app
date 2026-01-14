@@ -3,16 +3,22 @@ import { useEffect, useState } from "react";
 type LocationState = {
   lat: number | null;
   lon: number | null;
-  error: string | null;
   loading: boolean;
+  error: string | null;
 };
 
-export const useGeolocation = () => {
+// 사용자 위치정보를 가져오지 못할 경우 default 위치 노출
+const DEFAULT_LOCATION = {
+  lat: 37.5665,
+  lon: 126.978,
+};
+
+export const useGeolocation = (): LocationState => {
   const [state, setState] = useState<LocationState>({
-    lat: null,
-    lon: null,
-    error: null,
+    lat: DEFAULT_LOCATION.lat,
+    lon: DEFAULT_LOCATION.lon,
     loading: true,
+    error: null,
   });
 
   useEffect(() => {
@@ -20,13 +26,14 @@ export const useGeolocation = () => {
       setState((prev) => ({
         ...prev,
         loading: false,
-        error: "이 브라우저는 위치 정보를 지원하지 않습니다.",
+        error: "Geolocation not supported",
       }));
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log("position", position);
         setState({
           lat: position.coords.latitude,
           lon: position.coords.longitude,
@@ -35,12 +42,15 @@ export const useGeolocation = () => {
         });
       },
       (err) => {
-        setState({
-          lat: null,
-          lon: null,
+        setState((prev) => ({
+          ...prev,
           loading: false,
-          error: err.message,
-        });
+          error: err.message || "위치 정보 불러오기 실패",
+        }));
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 7000,
       }
     );
   }, []);
