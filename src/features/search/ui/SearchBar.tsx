@@ -109,7 +109,7 @@ export const SearchBar = ({ onSelect, resetSignal }: SearchBarProps) => {
               <li
                 key={region}
                 onClick={() => handleSelect(region)}
-                className="flex items-center justify-between px-3 text-[#8F8C8C] py-2 hover:text-black cursor-pointer"
+                className="flex items-center text-[14px] justify-between px-3 text-[#8F8C8C] py-2 hover:text-black cursor-pointer"
               >
                 <span>{formatRegion(region)}</span>
 
