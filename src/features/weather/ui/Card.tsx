@@ -1,7 +1,11 @@
-import EmptyStarIcon from "@/assets/empty-star.svg";
-import StarIcon from "@/assets/star.svg";
+import { formatRegion } from "@/shared/lib/formatRegion";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import EmptyStarIcon from "@/assets/empty-star.svg";
+import StarIcon from "@/assets/star.svg";
+import PencilIcon from "@/assets/pencil.svg";
 
 type CardType = {
   data: any;
@@ -9,7 +13,7 @@ type CardType = {
 };
 
 const Card = ({ data, address }: CardType) => {
-  console.log("main", data);
+  const navigate = useNavigate();
   const {
     current: { temp, weather },
     daily,
@@ -22,7 +26,6 @@ const Card = ({ data, address }: CardType) => {
   const { addFavorite, removeFavorite, updateFavoriteNickname, isFavorite } = useFavoriteStore();
 
   const isFav = isFavorite(address.lat, address.lon);
-  console.log("address", address);
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,13 +52,16 @@ const Card = ({ data, address }: CardType) => {
   }, [isEditing]);
 
   const saveNickname = () => {
-    if (!value.trim()) {
-      setValue(address?.nickname ?? name);
-      setIsEditing(false);
-      return;
+    const trimmed = value.trim();
+
+    // 아무것도 입력 안 한 경우 별칭 제거
+    if (!trimmed) {
+      updateFavoriteNickname(address.lat, address.lon, undefined);
+      setValue(address?.name);
+    } else {
+      updateFavoriteNickname(address.lat, address.lon, trimmed);
     }
 
-    updateFavoriteNickname(address?.lat, address?.lon, value.trim());
     setIsEditing(false);
   };
 
@@ -63,49 +69,74 @@ const Card = ({ data, address }: CardType) => {
   return (
     <div
       onClick={() => {
-        // 카드 클릭시 상세 페이지로 이동
+        if (isEditing) return;
+        navigate(`/weather?lat=${address.lat}&lon=${address.lon}`, {
+          state: {
+            name: address.nickname ?? formatRegion(address.name),
+            isDetail: true,
+          },
+        });
       }}
-      className="border rounded-2xl  p-3"
+      className="border border-white/30 cursor-pointer bg-white/10 backdrop-blur-lg hover:bg-white/20 min-w-37.5 rounded-2xl text-[12px] p-3"
     >
-      {/* ⭐ 즐겨찾기 버튼 */}
-      <img
-        src={isFav ? StarIcon : EmptyStarIcon}
-        alt="favorite"
-        className="w-4 h-4 cursor-pointer"
-        onClick={handleToggleFavorite}
-      />
-      <div className="mb-2">
+      <div className="flex flex-row items-center">
+        {/* 즐겨찾기 */}
+        <img
+          src={isFav ? StarIcon : EmptyStarIcon}
+          alt="favorite"
+          className="w-4 h-4 cursor-pointer"
+          onClick={handleToggleFavorite}
+        />
         {isEditing ? (
           <input
             ref={inputRef}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onBlur={saveNickname}
+            placeholder={formatRegion(address?.name)}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
             onKeyDown={(e) => {
+              e.stopPropagation();
               if (e.key === "Enter") saveNickname();
               if (e.key === "Escape") {
-                setValue(address?.nickname ?? name);
+                setValue(address?.nickname ?? formatRegion(address?.name));
                 setIsEditing(false);
               }
             }}
-            className="border-b outline-none text-lg font-semibold"
+            className=" outline-none text-[14px] font-semibold"
           />
         ) : (
           <p
-            onClick={() => isFav && setIsEditing(true)}
-            className={`text-lg font-semibold ${isFav ? "cursor-pointer" : "cursor-default"}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing(true);
+            }}
+            className={`text-[14px] font-semibold flex flex-row items-center ${
+              isFav ? "cursor-pointer" : "cursor-default"
+            }`}
           >
-            {address?.nickname ?? name}
+            {address?.nickname ?? formatRegion(address?.name)}
+            <img src={PencilIcon} className="w-2 h-2 ml-1" alt="edit" />
           </p>
         )}
       </div>
-      {/* 장소의 이름 (별칭) 수정 기능 */}
-      <p>{address?.name}</p>
-      <img src={iconUrl} className="w-8 h-8" alt="icon" />
-      <p>오늘의 날씨는 {description}입니다.</p>
-      <p>온도 : {temp}°</p>
-      <p>최고기온 : {max}°</p>
-      <p>최저기온 : {min}°</p>
+
+      <div className="flex flex-col justify-center items-center">
+        <div className="relative">
+          <img src={iconUrl} className="w-12 h-12" alt="icon" />
+          <p className="absolute font-medium text-10 left-8 top-2">{temp}°</p>
+        </div>
+        <p>오늘의 날씨는 {description}입니다.</p>
+        <div className="flex flex-row gap-1">
+          <p className="text-[10px]">
+            최저 <span className="text-[12px]">{min}°</span>
+          </p>
+          <p className="text-[10px]">
+            최고 <span className="text-[12px]">{max}°</span>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

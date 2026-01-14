@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { SearchBar } from "@/features/search/ui/SearchBar";
 import { useWeather } from "@/features/weather/model/useWeather";
-import Detail from "@/features/weather/ui/Detail";
+import WeatherInfo from "@/features/weather/ui/WeatherInfo";
 import { useReverseGeocode } from "@/shared/hooks/useReverseGeocode";
 import { useGeolocation } from "@/shared/lib/useGeolocation";
 import Favorite from "@/features/weather/ui/Favorite";
+import Empty from "@/features/weather/ui/Empty";
 
-import PointIcon from "@/assets/focus-points.png";
 import LocationIcon from "@/assets/location.svg";
+import LoadingSpinner from "@/features/weather/ui/Spinner";
 
 type SelectedLocation = {
   name: string;
@@ -18,42 +19,45 @@ type SelectedLocation = {
 };
 
 const HomePage = () => {
-  const { lat: userLat, lon: userLon, loading: locationLoading } = useGeolocation();
+  const { lat: userLat, lon: userLon } = useGeolocation();
 
   const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
+  const [resetSearch, setResetSearch] = useState<number>(0);
 
   const lat = selectedLocation?.lat ?? userLat;
   const lon = selectedLocation?.lon ?? userLon;
 
   const { address } = useReverseGeocode(lat, lon);
-  const { data: weatherData } = useWeather(lat, lon);
+  const { data: weatherData, isLoading, isError } = useWeather(lat, lon);
 
-  if (locationLoading) {
-    return <div>Loading...</div>;
+  function WeatherContent() {
+    if (isLoading) return <LoadingSpinner />;
+    if (isError || !weatherData) return <Empty />;
+    return <WeatherInfo weather={weatherData} />;
   }
 
   return (
-    <div className="w-full bg-black h-screen p-4">
-      {/* 📍 현재 위치로 되돌리기 */}
-      <img
-        src={PointIcon}
-        alt="current location"
-        className="w-4 h-4 cursor-pointer"
-        onClick={() => {
-          setSelectedLocation(null);
-        }}
-      />
-      <div className="flex flex-row space-x-2">
-        <div className="flex flex-row items-center min-w-fit text-white">
-          <img src={LocationIcon} alt="location" className="w-5 h-5 mr-1" />
+    <div className="max-w-[70%] mx-auto">
+      <div className="w-[80%] mx-auto flex flex-row flex-wrap space-x-2 gap-2">
+        <div className="flex flex-row items-center min-w-fit text-white text-[12px]">
+          <img
+            src={LocationIcon}
+            alt="location"
+            className="w-4 h-4 mr-1 cursor-pointer"
+            onClick={() => {
+              //내위치 다시 불러오기
+              setSelectedLocation(null);
+              setResetSearch((prev) => prev + 1);
+            }}
+          />
           {address?.region_1depth_name + " " + address?.region_2depth_name + " " + address?.region_3depth_name}
         </div>
         {/* 검색창 */}
-        <SearchBar onSelect={setSelectedLocation} />
+        <SearchBar onSelect={setSelectedLocation} resetSignal={resetSearch} />
       </div>
 
       {/* 날씨 정보 */}
-      <Detail weather={weatherData} />
+      {WeatherContent()}
 
       {/* 즐겨찾기 날씨 */}
       <Favorite />

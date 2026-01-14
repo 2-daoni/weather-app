@@ -10,23 +10,39 @@ export type FavoriteLocation = {
 
 type FavoriteState = {
   favorites: FavoriteLocation[];
-  addFavorite: (location: FavoriteLocation) => void;
+  addFavorite: (location: FavoriteLocation) => boolean;
   removeFavorite: (lat: number, lon: number) => void;
   isFavorite: (lat: number, lon: number) => boolean;
-  updateFavoriteNickname: (lat: number, lon: number, nickname: string) => void;
+  updateFavoriteNickname: (lat: number, lon: number, nickname?: string) => void;
 };
+
+const MAX_FAVORITES = 6;
 
 export const useFavoriteStore = create<FavoriteState>()(
   persist(
     (set, get) => ({
       favorites: [],
 
-      addFavorite: (location) =>
-        set((state) => {
-          const exists = state.favorites.some((f) => f.lat === location.lat && f.lon === location.lon);
-          if (exists) return state;
-          return { favorites: [...state.favorites, location] };
-        }),
+      // addFavorite: (location) =>
+      //   set((state) => {
+      //     const exists = state.favorites.some((f) => f.lat === location.lat && f.lon === location.lon);
+      //     if (exists) return state;
+
+      //     return { favorites: [...state.favorites, location] };
+      //   }),
+      addFavorite: (location) => {
+        const { favorites } = get();
+
+        const exists = favorites.some((f) => f.lat === location.lat && f.lon === location.lon);
+        if (exists) return true;
+
+        if (favorites.length >= MAX_FAVORITES) {
+          return false;
+        }
+
+        set({ favorites: [...favorites, location] });
+        return true;
+      },
 
       removeFavorite: (lat, lon) =>
         set((state) => ({

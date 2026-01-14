@@ -12,20 +12,21 @@ export function HourlyWeatherSlider(hourly: any[]) {
 
     return (
       <div className="hour-card">
-        <span className="hour">{time}시</span>
-        <img src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`} alt="" />
-        <span className="temp">{Math.round(hour.temp)}°</span>
+        <span className="text-[14px]">{time}시</span>
+        <img src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`} className="w-14 h-14" alt="" />
+        <span className="font-medium text-[18px]  ml-1">{Math.round(hour.temp)}°</span>
       </div>
     );
   };
 
   return (
-    <div className="embla">
+    <div className="embla min-w-50 bg-white/10 p-5 backdrop-blur-lg rounded-2xl border border-white/20 shadow-xl text-white">
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
-          {hourly?.map((h) => (
+          {hourly?.map((h, index) => (
             <div className="embla__slide" key={h.dt}>
               <HourCard hour={h} />
+              {hourly.length - 1 !== index && <div className="w-px h-[80%] bg-white/30 mt-3 ml-2" />}
             </div>
           ))}
         </div>
