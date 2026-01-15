@@ -14,6 +14,7 @@ type FavoriteState = {
   removeFavorite: (lat: number, lon: number) => void;
   isFavorite: (lat: number, lon: number) => boolean;
   updateFavoriteNickname: (lat: number, lon: number, nickname?: string) => void;
+  getFavoriteNickname: (lat: number, lon: number) => string | undefined;
 };
 
 const MAX_FAVORITES = 6;
@@ -23,13 +24,6 @@ export const useFavoriteStore = create<FavoriteState>()(
     (set, get) => ({
       favorites: [],
 
-      // addFavorite: (location) =>
-      //   set((state) => {
-      //     const exists = state.favorites.some((f) => f.lat === location.lat && f.lon === location.lon);
-      //     if (exists) return state;
-
-      //     return { favorites: [...state.favorites, location] };
-      //   }),
       addFavorite: (location) => {
         const { favorites } = get();
 
@@ -55,6 +49,9 @@ export const useFavoriteStore = create<FavoriteState>()(
         set((state) => ({
           favorites: state.favorites.map((f) => (f.lat === lat && f.lon === lon ? { ...f, nickname } : f)),
         })),
+
+      getFavoriteNickname: (lat: number, lon: number) =>
+        get().favorites.find((f) => f.lat === lat && f.lon === lon)?.nickname,
     }),
     {
       name: "favorite-locations",

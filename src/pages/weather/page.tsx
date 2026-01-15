@@ -19,7 +19,7 @@ const WeatherPage = () => {
   return (
     <div className="max-w-[90%] mx-auto">
       <img src={LeftArrowIcon} alt="arrow" className="w-5 h-5 cursor-pointer" onClick={() => navigate("/")} />
-      <WeatherInfo weather={data} />
+      <WeatherInfo weather={data} lat={Number(lat)} lon={Number(lon)} />
     </div>
   );
 };
