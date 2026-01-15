@@ -33,7 +33,6 @@ export const useGeolocation = (): LocationState => {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log("position", position);
         setState({
           lat: position.coords.latitude,
           lon: position.coords.longitude,

@@ -23,7 +23,6 @@ export const useReverseGeocode = (lat: number | null, lon: number | null): UseRe
         setError(null);
 
         const result = await fetchReverseGeocode(lat, lon);
-        console.log("geo result", result);
         if (isMounted) setAddress(result);
       } catch (e) {
         if (isMounted) setError("주소 정보를 불러올 수 없습니다.");
