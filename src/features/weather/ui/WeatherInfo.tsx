@@ -5,6 +5,8 @@ import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useEffect, useState } from "react";
 import { formatRegion } from "@/shared/lib/formatRegion";
 
+import PencilIcon from "@/assets/pencil.svg";
+
 type WeatherType = {
   weather: any;
   lat?: number;
@@ -73,16 +75,20 @@ const WeatherInfo = ({ weather, lat, lon }: WeatherType) => {
                 }
               }}
               placeholder={formatRegion(displayName)}
-              className="border-b bg-transparent outline-none text-white text-lg font-semibold text-center"
+              className=" bg-transparent outline-none text-white text-lg font-semibold text-center"
             />
           ) : (
             <p
               onClick={() => {
                 if (isFav) setIsEditing(true);
               }}
-              className={twMerge("text-lg font-semibold text-white", isFav ? "cursor-pointer" : "cursor-default")}
+              className={twMerge(
+                "flex items-center flex-row ml-2 text-lg font-semibold text-white",
+                isFav ? "cursor-pointer" : "cursor-default"
+              )}
             >
               {displayName}
+              <img src={PencilIcon} className="w-2 h-2 ml-1" alt="edit" />
             </p>
           )}
         </>

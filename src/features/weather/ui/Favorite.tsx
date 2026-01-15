@@ -16,7 +16,7 @@ const Favorite = () => {
           <p className="mt-1">자주 확인할 지역을 추가해보세요</p>
         </div>
       ) : (
-        <div className="grid gap-4 mt-2 grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+        <div className="grid w-full  gap-4 mt-2 grid-cols-[repeat(auto-fill,minmax(210px,1fr))]">
           {data.map((item) => (
             <Card key={`${item.lat}-${item.lon}`} data={item.weather} address={item} />
           ))}

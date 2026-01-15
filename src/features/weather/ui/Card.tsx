@@ -77,7 +77,7 @@ const Card = ({ data, address }: CardType) => {
           },
         });
       }}
-      className="border border-white/30 cursor-pointer bg-white/10 backdrop-blur-lg hover:bg-white/20 min-w-37.5 max-w-60 rounded-2xl text-[12px] p-3"
+      className="border border-white/30 cursor-pointer bg-white/10 backdrop-blur-lg hover:bg-white/20 min-w-37.5 max-w-70 rounded-2xl text-[12px] p-3"
     >
       <div className="flex flex-row items-center">
         {/* 즐겨찾기 */}

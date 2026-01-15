@@ -1,73 +1,118 @@
-# React + TypeScript + Vite
+🙋‍♀️ 개발자 : 이다원 (Frontend Developer)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🌤 Weather App
 
-Currently, two official plugins are available:
+사용자 위치 기반 날씨 조회 및 즐겨찾기 관리가 가능한 날씨 웹 애플리케이션
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🔗 배포 주소
+👉 https://weather-app-seven-vert-68.vercel.app/
 
-## React Compiler
+<br/>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 📌 프로젝트 소개
 
-## Expanding the ESLint configuration
+사용자 위치 기반의 날씨 혹은 검색한 지역의 날씨 정보를 제공하는 웹사이트입니다.
+즐겨찾기 기능 및 별칭(닉네임) 설정 기능이 있습니다.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+<br/>
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 📂 프로젝트 실행 방법
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- 패키지 설치: npm install
+- 개발 서버 실행 : npm run dev
+- 빌드 : npm run build
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+<br/>
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### ✨ 구현 기능
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+> 1️⃣ 위치 기반 날씨 조회
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- 브라우저 Geolocation API를 활용하여 현재 위치 자동 인식, 위치 권한 거부 시에도 기본 위치(서울)를 통해 날씨 화면 제공
+
+> 2️⃣ 지역 검색
+
+- 지역명을 검색하면 위도(lat), 경도(lon)로 변환하여 날씨 조회
+
+> 3️⃣ 날씨 정보 제공
+
+- 현재 날씨
+
+- 오늘의 최저 / 최고 기온
+
+- 시간대별 날씨 (24시간)
+
+> 4️⃣ 즐겨찾기 기능
+
+- 자주 보는 지역을 즐겨찾기로 등록(최대 6개), 초과 시 Toast 알림 노출
+
+> 5️⃣ 즐겨찾기 별칭(닉네임) 설정
+
+- 즐겨찾기한 지역에 별칭 설정 가능
+
+- 카드 / 상세 페이지 어디서든 동일하게 수정 가능
+
+- 별칭 삭제 시 자동으로 원래 지역명으로 복구
+
+> 6️⃣ 상세 페이지
+
+- 카드 클릭 시 상세 페이지로 이동
+
+- 상세 페이지에서도 날씨 확인 및 별칭 수정 가능
+
+<br/>
+
+### 🔧 기술적 의사결정 및 이유
+
+1. 상태관리 - Zustand
+
+- 즐겨찾기 지역, 닉네임 등 여러 컴포넌트에서 공통으로 사용하는 상태를 효율적으로 관리하기 위해 Zustand를 선택했습니다.
+- 간단한 설정, 보일러 플레이트 코드가 적다. => 소규모 프로젝트에 적합하다 판단하였습니다.
+
+2. 날씨 데이터 API – OpenWeather One Call API
+
+- 현재 날씨, 시간대별 날씨, 일별 최고/최저 기온을 한 번의 요청으로 받아오기 위해 One Call API를 사용했습니다.
+- 단일 API 호출로 필요한 모든 날씨 데이터 획득 가능
+
+3. 위치 처리 방식 – Geolocation
+
+- Geolocation API로 사용자의 위도/경도 획득
+
+- Reverse Geocoding을 통해 좌표 → 행정구역명 변환
+
+4. UI – Tailwind CSS
+
+- 빠른 스타일링과 일관된 UI 구현을 위해 Tailwind CSS를 사용했습니다.
+
+- 개인 프로젝트에서 생산성과 유지보수를 동시에 고려한 선택입니다. 무엇보다 직관적!
+
+6. 시간대별 날씨 슬라이더 – Embla Carousel
+
+- 가볍고 제어가 쉬운 슬라이더 라이브러리를 찾던 중 Embla Carousel을 선택했습니다.
+
+- 불필요한 기능이 없는 경량 라이브러리
+
+7. 배포 – Vercel
+
+- 프론트엔드 프로젝트 배포 및 관리의 편의성을 위해 Vercel을 사용했습니다.
+
+- GitHub 연동으로 자동 배포 가능
+
+- 개인 프로젝트 배포 및 공유에 최적의 환경이라고 판단했습니다.
+
+<br/>
+
+### 🛠 사용 기술 스택
+
+- React
+
+- TypeScript
+
+- Tailwind CSS
+
+- Zustand
+
+- 날씨 open api : OpenWeatherMap API
+- 배포 : Vercel
+
+<br/>
